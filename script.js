@@ -1,37 +1,20 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const list = document.getElementById('list');
-  let items = document.getElementsByTagName('li');
-  let itemCount = items.length;
+describe('Infinite Scrolling Test', () => {
+  beforeEach(() => {
+    cy.visit('http://localhost:3000'); // Replace with your actual URL
+  });
 
-  // Function to add more items to the list
-  function addMoreItems() {
-    for (let i = 0; i < 2; i++) {
-      const newItem = document.createElement('li');
-      newItem.textContent = `List Item ${++itemCount}`;
-      list.appendChild(newItem);
-    }
-    items = document.getElementsByTagName('li'); // Update items array
-  }
+  it('should load additional list items on scroll', () => {
+    // Check if the initial list exists
+    cy.get('#list').should('exist');
 
-  // Function to check if user has reached end of list
-  function isEndOfList() {
-    const lastItem = items[itemCount - 1];
-    const lastItemOffset = lastItem.offsetTop + lastItem.clientHeight;
-    const pageOffset = window.pageYOffset + window.innerHeight;
-    return pageOffset > lastItemOffset - 20; // Consider a threshold of 20px before the end
-  }
+    // Perform assertions within the viewport
+    cy.viewport('macbook-15'); // Adjust viewport as necessary
 
-  // Initial load of 10 items
-  for (let i = 0; i < 10; i++) {
-    const newItem = document.createElement('li');
-    newItem.textContent = `List Item ${i + 1}`;
-    list.appendChild(newItem);
-  }
+    // Scroll to the bottom to trigger loading more items
+    cy.scrollTo('bottom');
 
-  // Event listener for scroll events
-  window.addEventListener('scroll', () => {
-    if (isEndOfList()) {
-      addMoreItems();
-    }
+    // Wait for the new items to load
+    cy.get('#list li').should('have.length', 12); // Adjust length as per your implementation
   });
 });
+
